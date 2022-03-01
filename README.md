@@ -1,6 +1,4 @@
-# Runny the checkpoint master
-
-Name can be subjected to change.
+# Ronny the station chef
 
 ## Setup
 
