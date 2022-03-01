@@ -6,7 +6,7 @@
 pip3 install -r requirements.txt
 ```
 
-Install `hclitool` for detecting the bacons.
+Install `hclitool` for detecting the beacons.
 
 For now a simple sqlite database is used. This will be updated later on.
 
