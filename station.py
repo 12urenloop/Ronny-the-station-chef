@@ -1,9 +1,10 @@
-from typing import List
-
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
+from socket import gethostname
 
+import database.crud as crud
 import database.models as models
+import database.schemas as schemas
 from database.database import engine, SessionLocal
 
 models.Base.metadata.create_all(bind=engine)
@@ -14,6 +15,8 @@ app: FastAPI = FastAPI(
     version="6.9"
 )
 
+station_id: str = gethostname()
+
 
 def db():
     db = SessionLocal()
@@ -23,7 +26,9 @@ def db():
         db.close()
 
 
-@app.get('/detections/{last_id}')
-def get_detections(last_id: int, db: Session = Depends(db)):
-    detections: List[models.Detection] = db.query(models.Detection).filter(models.Detection.id > last_id).order_by(models.Detection.id).limit(1000).all()
-    return detections
+@app.get('/detections/{last_id}', response_model=schemas.DetectionsResponse)
+def get_detections(last_id: int, limit: int = 1000, database: Session = Depends(db)):
+    return schemas.DetectionsResponse(
+        detections=crud.get_detections_after(database, last_id, limit=limit),
+        station_id=station_id
+    )
