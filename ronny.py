@@ -6,7 +6,15 @@ from database.models import Base, Detection
 from database.database import SessionLocal, engine
 
 from sqlalchemy.orm import Session
-from scapy.layers.bluetooth import *
+from scapy.layers.bluetooth import (
+    HCI_LE_Meta_Advertising_Reports,
+    EIR_Manufacturer_Specific_Data,
+    BluetoothHCISocket,
+    HCI_Hdr,
+    HCI_Command_Hdr,
+    HCI_Cmd_LE_Set_Scan_Parameters,
+    HCI_Cmd_LE_Set_Scan_Enable
+)
 
 logging.basicConfig(format='[%(levelname)s][%(asctime)s] %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
                     level=logging.INFO)
@@ -14,8 +22,8 @@ logging.basicConfig(format='[%(levelname)s][%(asctime)s] %(message)s', datefmt='
 Base.metadata.create_all(bind=engine)
 db: Session = SessionLocal()
 
-
 zeus_mac_prefix = "5a:45:55:53"
+
 
 def packet_callback(packet):
     try:
@@ -47,11 +55,9 @@ def packet_callback(packet):
             db.commit()
     except Exception as e:
         logging.critical(e, exc_info=True)
-        
-    
 
 
 bt = BluetoothHCISocket(0)
-bt.sr(HCI_Hdr()/HCI_Command_Hdr()/HCI_Cmd_LE_Set_Scan_Parameters(type=0))
-bt.sr(HCI_Hdr()/HCI_Command_Hdr()/HCI_Cmd_LE_Set_Scan_Enable(enable=True, filter_dups=False))
+bt.sr(HCI_Hdr() / HCI_Command_Hdr() / HCI_Cmd_LE_Set_Scan_Parameters(type=0))
+bt.sr(HCI_Hdr() / HCI_Command_Hdr() / HCI_Cmd_LE_Set_Scan_Enable(enable=True, filter_dups=False))
 bt.sniff(lfilter=lambda p: HCI_LE_Meta_Advertising_Reports in p, store=False, prn=packet_callback)
