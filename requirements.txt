@@ -9,6 +9,7 @@ idna==3.3
 pydantic==1.9.0
 python-dotenv==0.19.2
 PyYAML==6.0
+scapy==2.4.5
 sniffio==1.2.0
 SQLAlchemy==1.4.31
 starlette==0.17.1

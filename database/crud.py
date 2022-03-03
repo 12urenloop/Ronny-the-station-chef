@@ -15,10 +15,3 @@ def get_detections_after(db: Session, from_id: int) -> List[Detection]:
 
 def get_detection_by_time_and_mac(db: Session, time: int, mac: str) -> Optional[Detection]:
     return db.query(Detection).filter(Detection.time == time, Detection.mac == mac).one_or_none()
-
-
-def create_detection(db: Session, time: int, mac: str) -> Detection:
-    detection: Detection = Detection(time=time, mac=mac)
-    db.add(detection)
-    db.commit()
-    return detection
