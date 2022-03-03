@@ -24,11 +24,11 @@ def packet_callback(packet):
             if report.addr.startswith(zeus_mac_prefix):
                 mac = str(report.addr).lower()
                 if EIR_Manufacturer_Specific_Data not in packet:
-                    logging.warn("No manufacturer information {mac}")
+                    logging.warning(f"No manufacturer information {mac}")
                     continue
                 content = bytes(packet[EIR_Manufacturer_Specific_Data].payload)
                 if len(content) == 23:
-                    logging.warn(f"Skipping old baton {mac}")
+                    logging.warning(f"Skipping old baton {mac}")
                     continue
                 elif len(content) != 9:
                     logging.error(f"Fake baton {mac} {len(content)} {content.hex()}")
