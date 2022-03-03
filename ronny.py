@@ -23,6 +23,9 @@ def packet_callback(packet):
         for report in packet[HCI_LE_Meta_Advertising_Reports].reports:
             if report.addr.startswith(zeus_mac_prefix):
                 mac = str(report.addr).lower()
+                if EIR_Manufacturer_Specific_Data not in packet:
+                    logging.warn("No manufacturer information {mac}")
+                    continue
                 content = bytes(packet[EIR_Manufacturer_Specific_Data].payload)
                 if len(content) == 23:
                     logging.warn(f"Skipping old baton {mac}")
