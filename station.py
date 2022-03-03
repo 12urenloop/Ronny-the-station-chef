@@ -1,6 +1,8 @@
+import time
+from socket import gethostname
+
 from fastapi import FastAPI, Depends
 from sqlalchemy.orm import Session
-from socket import gethostname
 
 import database.crud as crud
 import database.models as models
@@ -27,8 +29,15 @@ def db():
 
 
 @app.get('/detections/{last_id}', response_model=schemas.DetectionsResponse)
-def get_detections(last_id: int, limit: int = 1000, database: Session = Depends(db)):
+async def get_detections(last_id: int, limit: int = 1000, database: Session = Depends(db)):
     return schemas.DetectionsResponse(
         detections=crud.get_detections_after(database, last_id, limit=limit),
         station_id=station_id
+    )
+
+
+@app.get('/time', response_model=schemas.UnixTimeResponse)
+async def get_time():
+    return schemas.UnixTimeResponse(
+        unix_time=int(time.time())
     )

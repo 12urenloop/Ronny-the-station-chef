@@ -19,3 +19,7 @@ class Detection(BaseModel):
 class DetectionsResponse(BaseModel):
     detections: List[Detection]
     station_id: str
+
+
+class UnixTimeResponse(BaseModel):
+    unix_time: int
