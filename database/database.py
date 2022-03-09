@@ -5,7 +5,7 @@ from sqlalchemy.orm import sessionmaker
 
 DATABASE_NAME = "sqlite:///./ronny.db"
 
-engine = create_engine(DATABASE_NAME)
+engine = create_engine(DATABASE_NAME, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 Base = declarative_base()
