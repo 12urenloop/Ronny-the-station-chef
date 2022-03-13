@@ -6,7 +6,7 @@
       apt:
         name: [
           'zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux',
-          'python-setuptools', 'python3-pip',
+          'python3-setuptools', 'python3-pip',
           'acl', 'postgresql', 'libpq-dev', 'python-psycopg2'
         ]
         update_cache: true
