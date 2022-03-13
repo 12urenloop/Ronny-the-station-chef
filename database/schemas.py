@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 
 from pydantic import BaseModel, Field
 
@@ -7,9 +8,9 @@ class Detection(BaseModel):
     id: int
     mac: str
     rssi: int
-    baton_uptime_ms: int = Field(alias='uptime_ms')
-    battery_percentage: float = Field(alias='battery')
-    detection_time: int = Field(alias='detection_timestamp')
+    baton_uptime_ms: int = Field(alias="uptime_ms")
+    battery_percentage: float = Field(alias="battery")
+    detection_time: datetime = Field(alias="detection_timestamp")
 
     class Config:
         orm_mode = True
