@@ -9,7 +9,7 @@
     - name: Set a hostname
       ansible.builtin.hostname:
         name: "{{ inventory_hostname }}"
-    - name: Replace a /etc/hosts entry for our hostname
+    - name: Add a /etc/hosts entry for our hostname
       ansible.builtin.lineinfile:
         path: /etc/hosts
         insertafter: '^127\.0\.0\.1[ ]+localhost'
@@ -18,7 +18,7 @@
         group: root
         mode: '0644'
         create: true
-    - name: change password for pi user
+    - name: Change password for pi user
       ansible.builtin.user:
         name: pi
         shell: /bin/bash
