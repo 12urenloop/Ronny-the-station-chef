@@ -12,7 +12,7 @@ class Detection(BaseModel):
     battery_percentage: float = Field(alias="battery")
     detection_time: float = Field(alias="detection_timestamp")
 
-    @validator('*', pre=True)
+    @validator("*", pre=True)
     def convert_time(cls, v) -> float:
         if isinstance(v, datetime):
             return v.timestamp()
@@ -21,7 +21,6 @@ class Detection(BaseModel):
     class Config:
         orm_mode = True
         allow_population_by_field_name = True
-        # json_encoders = {datetime: lambda v: v.timestamp()}
 
 
 class DetectionsResponse(BaseModel):
