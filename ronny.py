@@ -2,7 +2,7 @@ import struct
 import time
 import logging
 
-from datatime import datetime
+from datetime import datetime
 
 from database.models import Base, Detection
 from database.database import SessionLocal, engine
