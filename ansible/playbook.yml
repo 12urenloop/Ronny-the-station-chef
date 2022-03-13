@@ -2,7 +2,7 @@
 - hosts: station
   become: true
   tasks:
-    - name: Install base deps
+    - name: Install base dependencies
       apt:
         name: ['zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux', 'python-setuptools', 'python3-pip']
         update_cache: true
@@ -38,7 +38,7 @@
         name: systemd-time-wait-sync
         enabled: true
         state: started
-    - name: Checkout the Ronny repo
+    - name: Checkout the Ronny repository
       ansible.builtin.git:
         repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
         dest: /Ronny-the-station-chef
