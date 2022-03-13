@@ -49,7 +49,7 @@ def packet_callback(packet):
                 uptime_ms, battery_percentage = struct.unpack(">QB", content)
                 rssi = int(report.rssi)
                 detection: Detection = Detection(
-                    detection_time=datetime.fromtimestamp(time.time()),
+                    detection_time=datetime.now(),
                     mac=mac,
                     rssi=rssi,
                     baton_uptime_ms=uptime_ms,
