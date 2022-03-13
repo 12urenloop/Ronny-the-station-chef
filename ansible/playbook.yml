@@ -1,0 +1,78 @@
+---
+- hosts: station
+  become: true
+  tasks:
+    - name: Install base deps
+      apt:
+        name: ['zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux', 'python-setuptools', 'python3-pip']
+        update_cache: true
+    - name: Set a hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+    - name: Replace a /etc/hosts entry for our hostname
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        insertafter: '^127\.0\.0\.1[ ]+localhost'
+        line: "127.0.0.1   {{ inventory_hostname }}"
+        owner: root
+        group: root
+        mode: '0644'
+        create: true
+    - name: change password for pi user
+      ansible.builtin.user:
+        name: pi
+        shell: /bin/bash
+        state: present
+        password: "{{ 'zeusisdemax' | password_hash('sha512') }}"
+    - name: Set timezone to Europe/Brussels
+      community.general.timezone:
+        name: Europe/Brussels
+    - name: Set NTP server to the one from UGent
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/timesyncd.conf
+        regexp: '^#NTP='
+        line: "NTP=ntp.ugent.be"
+    - name: Enable ntp time sync
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: systemd-time-wait-sync
+        enabled: true
+        state: started
+    - name: Checkout the Ronny repo
+      ansible.builtin.git:
+        repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
+        dest: /Ronny-the-station-chef
+        version: main
+    - name: Install specified python requirements
+      pip:
+        requirements: /Ronny-the-station-chef/requirements.txt
+        executable: pip3
+    - name: Copy systemd files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "/etc/systemd/system/{{ item }}"
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - ronny.service
+        - station.service
+    - name: Copy entrypoint files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "/usr/local/bin/{{ item }}"
+        owner: root
+        group: root
+        mode: '0744'
+      loop:
+        - ronny
+        - station
+    - name: Enable systemd services
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: "{{ item }}"
+        enabled: true
+        state: restarted
+      loop:
+        - ronny
+        - station
