@@ -36,7 +36,7 @@ For production environments gunicorn is recommended.
 
 ## Production
 
-There is an all in one Ansible script that sets a linux machine up to run ronny. You need to hava ansible installed.
+There is an all in one Ansible script that sets a linux machine up to run ronny. You need to have Ansible installed.
 
 Steps:
 1. `cd ansible`
