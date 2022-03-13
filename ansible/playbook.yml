@@ -4,8 +4,13 @@
   tasks:
     - name: Install base dependencies
       apt:
-        name: ['zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux', 'python-setuptools', 'python3-pip']
+        name: [
+          'zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux',
+          'python-setuptools', 'python3-pip',
+          'acl', 'postgresql', 'libpq-dev', 'python-psycopg2'
+        ]
         update_cache: true
+        install_recommends: false
     - name: Set a hostname
       ansible.builtin.hostname:
         name: "{{ inventory_hostname }}"
@@ -41,12 +46,25 @@
     - name: Checkout the Ronny repository
       ansible.builtin.git:
         repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
-        dest: /Ronny-the-station-chef
-        version: main
+        dest: '/Ronny-the-station-chef'
+        version: 'add/ansible-deploy'
     - name: Install specified python requirements
       pip:
         requirements: /Ronny-the-station-chef/requirements.txt
         executable: pip3
+    - name: Create a new database with name "ronny"
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: ronny
+    - name: Connect to ronny database, create ronny user, and grant access to database
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        db: ronny
+        name: ronny
+        password: ronnydbpassword
+        priv: "ALL"
     - name: Copy systemd files
       ansible.builtin.copy:
         src: "{{ item }}"

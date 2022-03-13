@@ -36,12 +36,13 @@ For production environments gunicorn is recommended.
 
 ## Production
 
-There is an all in one Ansible script that sets a linux machine up to run ronny. You need to have Ansible installed.
+There is an all in one Ansible script that sets a linux machine up to run ronny. You need to have **Ansible** and **ansible-galaxy** installed.
 
 Steps:
 1. `cd ansible`
-2. enter the stations in the [hosts.ini](ansible/hosts.ini) file
-3. `ansible-playbook playbook.yml`
+2. make init
+3. enter the stations in the [hosts.ini](ansible/hosts.ini) file
+4. `ansible-playbook playbook.yml`
 
 ### Testing
 
