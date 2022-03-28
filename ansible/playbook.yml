@@ -22,7 +22,7 @@
           'zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux',
           'gcc', 'build-essential',
           'python3-dev', 'python3-setuptools', 'python3-pip', 'python3-wheel',
-          'acl', 'postgresql', 'libpq-dev', 'python-psycopg2'
+          'acl', 'postgresql', 'libpq-dev', 'python3-psycopg2'
         ]
         update_cache: true
         install_recommends: false
