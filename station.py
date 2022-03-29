@@ -32,6 +32,7 @@ def db():
 async def get_detections(
     last_id: int, limit: int = 1000, database: Session = Depends(db)
 ):
+    '''Get all detections after last_id, so detection with id last_id not included'''
     return schemas.DetectionsResponse(
         detections=crud.get_detections_after(database, last_id, limit=limit),
         station_id=station_id,
@@ -40,11 +41,13 @@ async def get_detections(
 
 @app.get("/time", response_model=schemas.UnixTimeResponse)
 async def get_time():
-    return schemas.UnixTimeResponse(unix_time=time.time())
+    '''Get Unix timestamp in milliseconds, like `Date.now()` in JavaScript.'''
+    return schemas.UnixTimeResponse(timestamp=int(time.time()*1000))
 
 
 @app.get("/last_detection", response_model=schemas.LastDetectionResponse)
 async def get_last_detection(database: Session = Depends(db)):
+    '''Get the last detection. If there are no detections, `detection` will be null.'''
     return schemas.LastDetectionResponse(
         detection=crud.get_last_detection(database),
         station_id=station_id,
