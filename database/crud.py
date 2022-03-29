@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
@@ -14,4 +14,12 @@ def get_detections_after(
         .order_by(Detection.id)
         .limit(limit)
         .all()
+    )
+
+
+def get_last_detection(db: Session) -> Optional[Detection]:
+    return (
+        db.query(Detection)
+        .order_by(Detection.id.desc())
+        .first()
     )

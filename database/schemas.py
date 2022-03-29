@@ -1,5 +1,5 @@
-from typing import List
-from datetime import datetime, timezone
+from typing import List, Optional
+from datetime import datetime
 
 from pydantic import BaseModel, Field, validator
 
@@ -30,3 +30,8 @@ class DetectionsResponse(BaseModel):
 
 class UnixTimeResponse(BaseModel):
     unix_time: int
+
+
+class LastDetectionResponse(BaseModel):
+    detection: Optional[Detection]
+    station_id: str

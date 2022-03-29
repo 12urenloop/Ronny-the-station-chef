@@ -12,3 +12,6 @@ class Detection(Base):
     rssi = Column(Integer, nullable=False)
     baton_uptime_ms = Column(Integer, nullable=False)
     battery_percentage = Column(Float, nullable=False)
+
+    def __repr__(self):
+        return f'<Detection {self.id} at {self.detection_time}, {self.mac} {self.rssi} {self.battery_percentage:.1f}%>'
