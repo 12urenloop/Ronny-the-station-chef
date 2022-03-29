@@ -1,0 +1,4 @@
+#!/bin/sh
+
+cd /Ronny-the-station-chef
+/usr/bin/env python3 ronny.py

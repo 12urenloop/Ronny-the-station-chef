@@ -2,6 +2,8 @@ import struct
 import time
 import logging
 
+from datetime import datetime
+
 from database.models import Base, Detection
 from database.database import SessionLocal, engine
 
@@ -13,11 +15,14 @@ from scapy.layers.bluetooth import (
     HCI_Hdr,
     HCI_Command_Hdr,
     HCI_Cmd_LE_Set_Scan_Parameters,
-    HCI_Cmd_LE_Set_Scan_Enable
+    HCI_Cmd_LE_Set_Scan_Enable,
 )
 
-logging.basicConfig(format='[%(levelname)s][%(asctime)s] %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p',
-                    level=logging.INFO)
+logging.basicConfig(
+    format="[%(levelname)s][%(asctime)s] %(message)s",
+    datefmt="%m/%d/%Y %I:%M:%S %p",
+    level=logging.INFO,
+)
 
 Base.metadata.create_all(bind=engine)
 db: Session = SessionLocal()
@@ -44,11 +49,12 @@ def packet_callback(packet):
                 uptime_ms, battery_percentage = struct.unpack(">QB", content)
                 rssi = int(report.rssi)
                 detection: Detection = Detection(
-                    detection_time=int(time.time()),
+                    detection_time=datetime.now(),
                     mac=mac,
                     rssi=rssi,
                     baton_uptime_ms=uptime_ms,
-                    battery_percentage=battery_percentage)
+                    battery_percentage=battery_percentage,
+                )
                 db.add(detection)
                 do_commit = True
         if do_commit:
@@ -59,5 +65,13 @@ def packet_callback(packet):
 
 bt = BluetoothHCISocket(0)
 bt.sr(HCI_Hdr() / HCI_Command_Hdr() / HCI_Cmd_LE_Set_Scan_Parameters(type=0))
-bt.sr(HCI_Hdr() / HCI_Command_Hdr() / HCI_Cmd_LE_Set_Scan_Enable(enable=True, filter_dups=False))
-bt.sniff(lfilter=lambda p: HCI_LE_Meta_Advertising_Reports in p, store=False, prn=packet_callback)
+bt.sr(
+    HCI_Hdr()
+    / HCI_Command_Hdr()
+    / HCI_Cmd_LE_Set_Scan_Enable(enable=True, filter_dups=False)
+)
+bt.sniff(
+    lfilter=lambda p: HCI_LE_Meta_Advertising_Reports in p,
+    store=False,
+    prn=packet_callback,
+)

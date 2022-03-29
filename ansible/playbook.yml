@@ -1,0 +1,97 @@
+---
+- hosts: station
+  become: true
+  tasks:
+    - name: Set timezone to Europe/Brussels
+      community.general.timezone:
+        name: Europe/Brussels
+    - name: Set NTP server to the one from UGent
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/timesyncd.conf
+        regexp: '^#NTP='
+        line: "NTP=ntp.ugent.be"
+    - name: Enable ntp time sync
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: systemd-time-wait-sync
+        enabled: true
+        state: started
+   - name: Install base dependencies
+      apt:
+        name: [
+          'zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux',
+          'gcc', 'build-essential',
+          'python3-dev', 'python3-setuptools', 'python3-pip', 'python3-wheel',
+          'acl', 'postgresql', 'libpq-dev', 'python3-psycopg2'
+        ]
+        update_cache: true
+        install_recommends: false
+    - name: Set a hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+    - name: Add a /etc/hosts entry for our hostname
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        insertafter: '^127\.0\.0\.1[ ]+localhost'
+        line: "127.0.0.1   {{ inventory_hostname }}"
+        owner: root
+        group: root
+        mode: '0644'
+        create: true
+    - name: Change password for pi user
+      ansible.builtin.user:
+        name: pi
+        shell: /bin/bash
+        state: present
+        password: "{{ 'zeusisdemax' | password_hash('sha512') }}"
+    - name: Checkout the Ronny repository
+      ansible.builtin.git:
+        repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
+        dest: '/Ronny-the-station-chef'
+        version: 'add/ansible-deploy'
+    - name: Install specified python requirements
+      pip:
+        requirements: /Ronny-the-station-chef/requirements.txt
+        executable: pip3
+    - name: Create a new database with name "ronny"
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_db:
+        name: ronny
+    - name: Connect to ronny database, create ronny user, and grant access to database
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        db: ronny
+        name: ronny
+        password: ronnydbpassword
+        priv: "ALL"
+    - name: Copy systemd files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "/etc/systemd/system/{{ item }}"
+        owner: root
+        group: root
+        mode: '0644'
+      loop:
+        - ronny.service
+        - station.service
+    - name: Copy entrypoint files
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: "/usr/local/bin/{{ item }}"
+        owner: root
+        group: root
+        mode: '0744'
+      loop:
+        - ronny
+        - station
+    - name: Enable systemd services
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: "{{ item }}"
+        enabled: true
+        state: restarted
+      loop:
+        - ronny
+        - station
