@@ -41,3 +41,11 @@ async def get_detections(
 @app.get("/time", response_model=schemas.UnixTimeResponse)
 async def get_time():
     return schemas.UnixTimeResponse(unix_time=int(time.time()))
+
+
+@app.get("/last_detection", response_model=schemas.LastDetectionResponse)
+async def get_last_detection(database: Session = Depends(db)):
+    return schemas.LastDetectionResponse(
+        detection=crud.get_last_detection(database),
+        station_id=station_id,
+    )
