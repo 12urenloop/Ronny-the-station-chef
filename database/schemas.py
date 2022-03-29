@@ -29,7 +29,7 @@ class DetectionsResponse(BaseModel):
 
 
 class UnixTimeResponse(BaseModel):
-    unix_time: int
+    unix_time: float
 
 
 class LastDetectionResponse(BaseModel):

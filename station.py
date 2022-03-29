@@ -40,7 +40,7 @@ async def get_detections(
 
 @app.get("/time", response_model=schemas.UnixTimeResponse)
 async def get_time():
-    return schemas.UnixTimeResponse(unix_time=int(time.time()))
+    return schemas.UnixTimeResponse(unix_time=time.time())
 
 
 @app.get("/last_detection", response_model=schemas.LastDetectionResponse)
