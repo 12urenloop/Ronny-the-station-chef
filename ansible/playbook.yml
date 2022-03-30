@@ -16,7 +16,7 @@
         name: systemd-time-wait-sync
         enabled: true
         state: started
-   - name: Install base dependencies
+    - name: Install base dependencies
       apt:
         name: [
           'zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux',
@@ -26,6 +26,7 @@
         ]
         update_cache: true
         install_recommends: false
+        tags: ['db']
     - name: Set a hostname
       ansible.builtin.hostname:
         name: "{{ inventory_hostname }}"
@@ -48,16 +49,30 @@
       ansible.builtin.git:
         repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
         dest: '/Ronny-the-station-chef'
-        version: 'add/ansible-deploy'
+        version: 'main'
     - name: Install specified python requirements
       pip:
         requirements: /Ronny-the-station-chef/requirements.txt
         executable: pip3
+    - name: Ensure myservice  is in a running state
+      service:
+        name: postgresql
+        state: started
+      register: postgresqlDetails
+      until: postgresqlDetails.status.ActiveState == "active"
+      retries: 15
+      delay: 2
+      tags: ['db']
+    - name: Wait for postgres port to come up
+      wait_for:
+        port: 5432
+      tags: ['db']
     - name: Create a new database with name "ronny"
       become: true
       become_user: postgres
       community.postgresql.postgresql_db:
         name: ronny
+      tags: ['db']
     - name: Connect to ronny database, create ronny user, and grant access to database
       become: true
       become_user: postgres
@@ -66,6 +81,7 @@
         name: ronny
         password: ronnydbpassword
         priv: "ALL"
+      tags: ['db']
     - name: Copy systemd files
       ansible.builtin.copy:
         src: "{{ item }}"
