@@ -23,3 +23,8 @@ def get_last_detection(db: Session) -> Optional[Detection]:
         .order_by(Detection.id.desc())
         .first()
     )
+
+def get_db_status(db: Session) -> str:
+    return (
+        db.execute('select version()').fetchone()
+    )

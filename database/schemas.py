@@ -35,3 +35,7 @@ class UnixTimeResponse(BaseModel):
 class LastDetectionResponse(BaseModel):
     detection: Optional[Detection]
     station_id: str
+
+class StatusResponse(BaseModel):
+    database: bool
+    
