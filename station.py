@@ -28,16 +28,15 @@ def db():
         db.close()
 
 
-@app.get("/detections/{last_id}", response_model=schemas.DetectionsResponse)
+@app.get("/detections/{last_id}")
 async def get_detections(
     last_id: int, limit: int = 1000, database: Session = Depends(db)
 ):
     '''Get all detections after last_id, so detection with id last_id not included'''
-    return schemas.DetectionsResponse(
-        detections=crud.get_detections_after(database, last_id, limit=limit),
-        station_id=station_id,
-    )
-
+    return {
+        'station_id': station_id,
+        'detections': [d.serialize() for d in crud.get_detections_after(database, last_id, limit=limit)]
+    }
 
 @app.get("/time", response_model=schemas.UnixTimeResponse)
 async def get_time():
