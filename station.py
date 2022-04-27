@@ -52,3 +52,11 @@ async def get_last_detection(database: Session = Depends(db)):
         detection=crud.get_last_detection(database),
         station_id=station_id,
     )
+
+@app.get("/status", response_model=schemas.StatusResponse)
+async def get_status(database: Session = Depends(db)):
+    '''Get the status of the webserver. Currently only shows the database status.'''
+    db_status = crud.get_db_status(database)
+    return schemas.StatusResponse(
+        database = True if len(db_status) > 0 else False
+    )
