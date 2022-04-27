@@ -26,7 +26,7 @@
         ]
         update_cache: true
         install_recommends: false
-        tags: ['db']
+      tags: ['db']
     - name: Set a hostname
       ansible.builtin.hostname:
         name: "{{ inventory_hostname }}"
