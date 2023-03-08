@@ -1,0 +1,12 @@
+---
+- hosts: station
+  become: true
+  tasks:
+    - name: Connect to ronny database, truncate detection tables
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_table:
+        db: ronny
+        name: detection
+        truncate: true
+      tags: ['db']
