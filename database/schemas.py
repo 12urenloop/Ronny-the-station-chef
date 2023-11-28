@@ -1,7 +1,7 @@
 from typing import List, Optional
 from datetime import datetime
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_serializer
 
 
 class Detection(BaseModel):
@@ -10,17 +10,15 @@ class Detection(BaseModel):
     rssi: int
     baton_uptime_ms: int = Field(alias="uptime_ms")
     battery_percentage: float = Field(alias="battery")
-    detection_time: float = Field(alias="detection_timestamp")
+    detection_time: datetime = Field(alias="detection_timestamp")
 
-    @validator("*", pre=True)
-    def convert_time(cls, v) -> float:
-        if isinstance(v, datetime):
-            return v.timestamp()
-        return v
+    @field_serializer("detection_time")
+    def convert_time(self, v: datetime, _info) -> float:
+        return v.timestamp()
 
     class Config:
-        orm_mode = True
-        allow_population_by_field_name = True
+        from_attributes = True
+        populate_by_name = True
 
 
 class DetectionsResponse(BaseModel):
