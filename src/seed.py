@@ -2,8 +2,8 @@ from datetime import datetime
 import random
 import time
 
-from database.models import Base, Detection
-from database.database import SessionLocal, engine
+from src.database.models import Base, Detection
+from src.database.database import SessionLocal, engine
 
 from sqlalchemy.orm import Session
 
@@ -28,5 +28,5 @@ while True:
     db.add(detection)
     db.commit()
     print(detection)
-    time.sleep(random.uniform(1, 2))
+    time.sleep(random.uniform(0.001, 0.01))
     
