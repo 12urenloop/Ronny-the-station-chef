@@ -7,12 +7,12 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
+python = "^3.9"
 fastapi = "^0.104.1"
 SQLAlchemy = "^2.0.23"
 scapy = "^2.5.0"
 uvicorn = {extras = ["standard"], version = "^0.24.0.post1"}
-psycopg2 = {extras = ["binary"], version = "^2.9.9"}
+orjson = "^3.9.10"
 
 
 [build-system]

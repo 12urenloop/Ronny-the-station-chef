@@ -2,6 +2,7 @@ import time
 from socket import gethostname
 
 from fastapi import FastAPI, Depends
+from fastapi.responses import ORJSONResponse
 from sqlalchemy.orm import Session
 
 import database.crud as crud
@@ -28,7 +29,7 @@ def db():
         db.close()
 
 
-@app.get("/detections/{last_id}", response_model=schemas.DetectionsResponse)
+@app.get("/detections/{last_id}", response_model=schemas.DetectionsResponse, response_class=ORJSONResponse)
 async def get_detections(
     last_id: int, limit: int = 1000, database: Session = Depends(db)
 ):
@@ -39,13 +40,13 @@ async def get_detections(
     )
 
 
-@app.get("/time", response_model=schemas.UnixTimeResponse)
+@app.get("/time", response_model=schemas.UnixTimeResponse, response_class=ORJSONResponse)
 async def get_time():
     '''Get Unix timestamp in milliseconds, like `Date.now()` in JavaScript.'''
     return schemas.UnixTimeResponse(timestamp=int(time.time()*1000))
 
 
-@app.get("/last_detection", response_model=schemas.LastDetectionResponse)
+@app.get("/last_detection", response_model=schemas.LastDetectionResponse, response_class=ORJSONResponse)
 async def get_last_detection(database: Session = Depends(db)):
     '''Get the last detection. If there are no detections, `detection` will be null.'''
     return schemas.LastDetectionResponse(
