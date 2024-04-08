@@ -56,7 +56,7 @@ func New() *DB {
 func (db *DB) InsertDetection(detection *Detection) (int64, error) {
 	// err := db.conn.Create(detection).Error
 	id := int64(0)
-	err := db.raw.QueryRow("INSERT INTO detections (rssi, mac, uptime_ms, detection_time, battery_percentage) VALUES ($1, $2, $3, $4, $5) RETURNING id", detection.Rssi, detection.Mac, detection.UptimeMs, detection.DetectionTime, detection.BatteryPercentage).Scan(&id)
+	err := db.raw.QueryRow("INSERT INTO detection (rssi, mac, uptime_ms, detection_time, battery_percentage) VALUES ($1, $2, $3, $4, $5) RETURNING id", detection.Rssi, detection.Mac, detection.UptimeMs, detection.DetectionTime, detection.BatteryPercentage).Scan(&id)
 	detection.ID = id
 	return detection.ID, err
 }
