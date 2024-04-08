@@ -52,7 +52,7 @@
 
     - name: Checkout the gonny repository
       ansible.builtin.git:
-        repo: 'https://github.com/NuttyShrimp/gonny-the-station-chef.git'
+        repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
         dest: '/gonny'
         version: 'master'
 
