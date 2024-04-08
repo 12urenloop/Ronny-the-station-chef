@@ -22,11 +22,10 @@ func main() {
 	c := make(chan os.Signal, 1)                    // Create channel to signify a signal being sent
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM) // When an interrupt or termination signal is sent, notify the channel
 
-mainLoop:
 	for {
 		select {
 		case <-c:
-			break mainLoop
+			return
 		default:
 			{
 

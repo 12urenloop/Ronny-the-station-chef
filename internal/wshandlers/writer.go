@@ -23,16 +23,14 @@ func Writer(c *websocket.Conn, lastId int64) {
 		closeChan <- true
 	}
 
-	// TODO: SQL query
 	if lastId > lastDbId {
 		lastId = lastDbId
 	}
 
-out:
 	for {
 		select {
 		case <-closeChan:
-			break out
+			return
 		default:
 			{
 				if c.Conn == nil {
@@ -71,7 +69,7 @@ out:
 						// Handle connection closure
 						logrus.Debugln("Connection closed")
 						closeChan <- true
-						break out
+						return
 					}
 					// Do some error recovery/restart procedure
 					logrus.Errorf("Failed to send detections over websocket: %+v\n", err)
