@@ -34,12 +34,12 @@ func main() {
 	app.Get("/detections/:last_id", func(c *fiber.Ctx) error {
 		lastIdStr := c.Params("last_id")
 		if lastIdStr == "" {
-			return c.SendString("last_id is required")
+			return c.Status(400).SendString("last_id is required")
 		}
 		lastId, err := strconv.Atoi(lastIdStr)
 		if err != nil {
 			logrus.Errorf("Failed to convert last_id to int: %+v\n", err)
-			return c.SendString("last_id must be an integer")
+			return c.Status(400).SendString("last_id must be an integer")
 		}
 
 		limit := c.QueryInt("limit", 1000)
@@ -47,7 +47,7 @@ func main() {
 		detections, err := conn.GetLimitedIdsAfter(lastId, limit)
 		if err != nil {
 			logrus.Errorf("Failed to retrieve detections from DB: %+v\n", err)
-			return c.SendString("Failed to retrieve detections from DB")
+			return c.Status(500).SendString("Failed to retrieve detections from DB")
 		}
 
 		return c.JSON(struct {
@@ -71,7 +71,7 @@ func main() {
 		detection, err := conn.GetLastDetection()
 		if err != nil {
 			logrus.Errorf("Failed to retrieve last detection from DB: %+v\n", err)
-			return c.SendString("Failed to retrieve last detection from DB")
+			return c.Status(500).SendString("Failed to retrieve last detection from DB")
 		}
 
 		return c.JSON(struct {
