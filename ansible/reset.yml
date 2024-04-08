@@ -10,3 +10,4 @@
         name: detection
         truncate: true
       tags: ['db']
+

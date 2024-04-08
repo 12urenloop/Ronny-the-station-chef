@@ -1,38 +1,25 @@
-# Ronny the station chef
+# Gonny the station chef
 
-## Ronny
+a rewrite of ronny the station chef but in go
 
-The script that collects detections and stores them in a database.
+## TODO
+- [ ] Move all log.fatals to proper err handling
+- [ ] Implement Error recovery
+- [ ] Add health endpoint
 
-## Station
+## What is what?
 
-The api that serves the detections stored in the common database.
+- Collector: Retrieves all packages retrieved on the bluetooth interface, filters out the garbage and stores the baton packets as a detection in the postgresql DB
+- Spreader: An HTTP webser powered by [fiber](gofiber.io) with an websocket endpoint where the detections will be sent over.
+- Emulator: This will emulate the `Collector` for testing purposes
 
-## Development
+## Setup
 
-### Setup
+- Install [go](https://go.dev/dl/)
 
-```bash
-pip3 install -r requirements.txt
-```
+- Run what you want with `go run cmds/PROGRAM/main.go`
+and in the case of the `Collector` do not forget to run the program with higher privileges
 
-For now a simple sqlite database is used. This will be updated later on.
-
-### Running
-
-#### Ronny
-
-```bash
-python3 ronny.py
-```
-
-#### Station
-
-```bash
-uvicorn station:app --host 0.0.0.0 --reload
-```
-
-For production environments gunicorn is recommended.
 
 ## Production
 
@@ -44,8 +31,3 @@ Steps:
 3. enter the stations in the [hosts.ini](ansible/hosts.ini) file
 4. `ansible-playbook playbook.yml`
 
-### Testing
-
-To test a production deployment, go into the Ansible folder and run `make test`.
-
-This will create a Vagrant VM and will run the Ansible script locally onto that VM.

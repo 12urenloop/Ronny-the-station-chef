@@ -1,5 +1,5 @@
 [Unit]
-Description=Station, serves detections from the database
+Description=Gonny Spreader, serves detections from the database
 Requires=network.target
 Requires=time-sync.target
 After=network.target
@@ -9,7 +9,8 @@ After=time-sync.target
 Type=simple
 Restart=always
 User=root
-ExecStart=station
+ExecStart=/gonny/cmds/spreader/main
+Environment="LOG_LEVEL=warning"
 
 [Install]
 WantedBy=multi-user.target

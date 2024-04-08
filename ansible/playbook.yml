@@ -5,17 +5,17 @@
     - name: Set timezone to Europe/Brussels
       community.general.timezone:
         name: Europe/Brussels
-    - name: Set NTP server to the one from UGent
-      ansible.builtin.lineinfile:
-        path: /etc/systemd/timesyncd.conf
-        regexp: '^#NTP='
-        line: "NTP=ntp.ugent.be"
-    - name: Enable ntp time sync
-      ansible.builtin.systemd:
-        daemon_reload: true
-        name: systemd-time-wait-sync
-        enabled: true
-        state: started
+    # - name: Set NTP server to the one from UGent
+    #   ansible.builtin.lineinfile:
+    #     path: /etc/systemd/timesyncd.conf
+    #     regexp: '^#NTP='
+    #     line: "NTP=ntp.ugent.be"
+    # - name: Enable ntp time sync
+    #   ansible.builtin.systemd:
+    #     daemon_reload: true
+    #     name: systemd-time-wait-sync
+    #     enabled: true
+    #     state: started
     - name: Install base dependencies
       apt:
         name: [
@@ -45,16 +45,33 @@
         shell: /bin/bash
         state: present
         password: "{{ 'zeusisdemax' | password_hash('sha512') }}"
-    - name: Checkout the Ronny repository
+    - name: Install golang
+      import_role:
+        name: gantsign.golang
+      tags: ['build']
+
+    - name: Checkout the gonny repository
       ansible.builtin.git:
-        repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
-        dest: '/Ronny-the-station-chef'
-        version: 'main'
-    - name: Install specified python requirements
-      pip:
-        requirements: /Ronny-the-station-chef/requirements.txt
-        executable: pip3
-    - name: Ensure myservice  is in a running state
+        repo: 'https://github.com/NuttyShrimp/gonny-the-station-chef.git'
+        dest: '/gonny'
+        version: 'master'
+
+    # - name: Install go dependencies
+    #   ansible.builtin.command:
+    #     cmd: go mod download
+    #     chdir: /gonny/
+    - name: Built collector binary
+      ansible.builtin.command:
+        cmd: env GOROOT={{ golang_install_dir }} GOPATH=/root {{ golang_install_dir }}/bin/go build -o cmds/collector/main cmds/collector/main.go
+        chdir: /gonny/
+      tags: ['build']
+    - name: Built spreader binary
+      ansible.builtin.command:
+        cmd: env GOROOT={{ golang_install_dir }} GOPATH=/root {{ golang_install_dir }}/bin/go build -o cmds/spreader/main cmds/spreader/main.go
+        chdir: /gonny/
+      tags: ['build']
+
+    - name: Ensure postgresql is in a running state
       service:
         name: postgresql
         state: started
@@ -90,18 +107,8 @@
         group: root
         mode: '0644'
       loop:
-        - ronny.service
-        - station.service
-    - name: Copy entrypoint files
-      ansible.builtin.copy:
-        src: "{{ item }}"
-        dest: "/usr/local/bin/{{ item }}"
-        owner: root
-        group: root
-        mode: '0744'
-      loop:
-        - ronny
-        - station
+        - gonny-collector.service
+        - gonny-spreader.service
     - name: Enable systemd services
       ansible.builtin.systemd:
         daemon_reload: true
@@ -109,5 +116,6 @@
         enabled: true
         state: restarted
       loop:
-        - ronny
-        - station
+        - gonny-collector
+        - gonny-spreader
+
