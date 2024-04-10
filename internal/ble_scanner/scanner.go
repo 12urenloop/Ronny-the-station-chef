@@ -48,7 +48,7 @@ func New(db *db.DB) *Scanner {
 }
 
 func (S *Scanner) scanFilter(a ble.Advertisement) bool {
-	return strings.HasPrefix(a.Addr().String(), ZEUS_MAC_PREFIX)
+	return strings.HasPrefix(strings.ToLower(a.Addr().String()), ZEUS_MAC_PREFIX)
 }
 
 func (S *Scanner) handleAdvertisment(a ble.Advertisement) {
