@@ -46,7 +46,7 @@ func main() {
 func generateRandomDetection() *db.Detection {
 	detection := db.Detection{
 		DetectionTime:     time.Now(),
-		Mac:               fmt.Sprintf("5a:45:55:53:00:%d%d", randInt(0, 10), randInt(0, 10)),
+		Mac:               fmt.Sprintf("5a:45:55:53:00:f%d", randInt(0, 10)),
 		Rssi:              randInt(-120, -40),
 		UptimeMs:          0,
 		BatteryPercentage: uint8(randInt(0, 101)),
