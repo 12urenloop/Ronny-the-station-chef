@@ -7,7 +7,7 @@ import (
 
 	"database/sql"
 
-	"github.com/12urenloop/gonny-the-station-chef/internal/utils"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/utils"
 	_ "github.com/joho/godotenv/autoload"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"

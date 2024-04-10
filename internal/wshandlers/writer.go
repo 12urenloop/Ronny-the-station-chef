@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/12urenloop/gonny-the-station-chef/internal/db"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/db"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/sirupsen/logrus"
 )

@@ -8,8 +8,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/12urenloop/gonny-the-station-chef/internal/db"
-	"github.com/12urenloop/gonny-the-station-chef/internal/logger"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/db"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/logger"
 	"github.com/sirupsen/logrus"
 )
 

@@ -9,9 +9,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/12urenloop/gonny-the-station-chef/internal/db"
-	"github.com/12urenloop/gonny-the-station-chef/internal/logger"
-	"github.com/12urenloop/gonny-the-station-chef/internal/wshandlers"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/db"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/logger"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/wshandlers"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
 	"github.com/sirupsen/logrus"

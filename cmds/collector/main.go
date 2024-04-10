@@ -1,9 +1,9 @@
 package main
 
 import (
-	blescanner "github.com/12urenloop/gonny-the-station-chef/internal/ble_scanner"
-	"github.com/12urenloop/gonny-the-station-chef/internal/db"
-	"github.com/12urenloop/gonny-the-station-chef/internal/logger"
+	blescanner "github.com/12urenloop/Ronny-the-station-chef/internal/ble_scanner"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/db"
+	"github.com/12urenloop/Ronny-the-station-chef/internal/logger"
 )
 
 func main() {

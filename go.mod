@@ -1,4 +1,4 @@
-module github.com/12urenloop/gonny-the-station-chef
+module github.com/12urenloop/Ronny-the-station-chef
 
 go 1.21.4
 
