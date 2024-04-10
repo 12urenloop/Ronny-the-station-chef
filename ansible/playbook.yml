@@ -5,17 +5,17 @@
     - name: Set timezone to Europe/Brussels
       community.general.timezone:
         name: Europe/Brussels
-    # - name: Set NTP server to the one from UGent
-    #   ansible.builtin.lineinfile:
-    #     path: /etc/systemd/timesyncd.conf
-    #     regexp: '^#NTP='
-    #     line: "NTP=ntp.ugent.be"
-    # - name: Enable ntp time sync
-    #   ansible.builtin.systemd:
-    #     daemon_reload: true
-    #     name: systemd-time-wait-sync
-    #     enabled: true
-    #     state: started
+    - name: Set NTP server to the one from UGent
+      ansible.builtin.lineinfile:
+        path: /etc/systemd/timesyncd.conf
+        regexp: '^#NTP='
+        line: "NTP=ntp.ugent.be"
+    - name: Enable ntp time sync
+      ansible.builtin.systemd:
+        daemon_reload: true
+        name: systemd-time-wait-sync
+        enabled: true
+        state: started
     - name: Install base dependencies
       apt:
         name: [
