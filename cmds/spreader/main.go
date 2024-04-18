@@ -108,7 +108,7 @@ func main() {
 	}))
 
 	go func() {
-		if err := app.Listen(":3000"); err != nil {
+		if err := app.Listen(":8000"); err != nil {
 			log.Panic(err)
 		}
 	}()
