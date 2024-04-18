@@ -72,7 +72,7 @@ func (db *DB) GetDetectionsBetweenIds(a, b int64) (*[]Detection, error) {
 func (db *DB) GetLimitedIdsAfter(a, limit int) (*[]Detection, error) {
 	detections := []Detection{}
 
-	err := db.conn.Where("id >", a).Limit(limit).Find(&detections).Error
+	err := db.conn.Where("id > ?", a).Limit(limit).Find(&detections).Error
 
 	return &detections, err
 }
