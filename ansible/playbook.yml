@@ -1,5 +1,6 @@
 ---
 - hosts: station
+  strategy: free  # speedup trick
   become: true
   tasks:
     - name: Set timezone to Europe/Brussels
@@ -9,7 +10,7 @@
       ansible.builtin.lineinfile:
         path: /etc/systemd/timesyncd.conf
         regexp: '^#NTP='
-        line: "NTP=ntp.ugent.be"
+        line: "NTP=ntp.ugent.be pool.ntp.org"
     - name: Enable ntp time sync
       ansible.builtin.systemd:
         daemon_reload: true
@@ -54,7 +55,7 @@
       ansible.builtin.git:
         repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
         dest: '/gonny'
-        version: 'master'
+        version: 'main'
 
     # - name: Install go dependencies
     #   ansible.builtin.command:
@@ -84,20 +85,21 @@
       wait_for:
         port: 5432
       tags: ['db']
+    - name: Connect to ronny database, create ronny user, and grant access to database
+      become: true
+      become_user: postgres
+      community.postgresql.postgresql_user:
+        db: postgres
+        name: ronny
+        password: ronnydbpassword
+        priv: "ALL"
+      tags: ['db']
     - name: Create a new database with name "ronny"
       become: true
       become_user: postgres
       community.postgresql.postgresql_db:
         name: ronny
-      tags: ['db']
-    - name: Connect to ronny database, create ronny user, and grant access to database
-      become: true
-      become_user: postgres
-      community.postgresql.postgresql_user:
-        db: ronny
-        name: ronny
-        password: ronnydbpassword
-        priv: "ALL"
+        owner: ronny
       tags: ['db']
     - name: Copy systemd files
       ansible.builtin.copy:
