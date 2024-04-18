@@ -1,5 +1,5 @@
 [Unit]
-Description=Ronny, collects detections into a database
+Description=Gonny Collector, collects detections into a database
 Requires=network.target
 Requires=time-sync.target
 After=network.target
@@ -9,7 +9,8 @@ After=time-sync.target
 Type=simple
 Restart=always
 User=root
-ExecStart=ronny
+ExecStart=/gonny/cmds/collector/main
+Environment="LOG_LEVEL=warning"
 
 [Install]
 WantedBy=multi-user.target
