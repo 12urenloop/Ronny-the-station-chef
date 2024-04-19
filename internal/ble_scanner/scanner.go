@@ -69,7 +69,7 @@ func (S *Scanner) handleAdvertisment(a ble.Advertisement) {
 	}
 
 	detection := db.Detection{
-		DetectionTime:     time.Now(),
+		DetectionTime:     time.Now().Unix(),
 		Mac:               a.Addr().String(),
 		Rssi:              a.RSSI(),
 		UptimeMs:          batonData.UptimeMs,
