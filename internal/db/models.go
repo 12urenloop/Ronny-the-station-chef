@@ -6,11 +6,11 @@ import (
 
 type Detection struct {
 	ID                int64     `json:"id" gorm:"primaryKey,autoIncrement"`
-	DetectionTime     time.Time `json:"detectionTime"`
+	DetectionTime     time.Time `json:"detection_timestamp"`
 	Mac               string    `json:"mac"`
 	Rssi              int       `json:"rssi"`
-	UptimeMs          uint64    `json:"uptimeMs"`
-	BatteryPercentage uint8     `json:"batteryPercentage"`
+	UptimeMs          uint64    `json:"uptime_ms"`
+	BatteryPercentage uint8     `json:"battery"`
 }
 
 func (D *Detection) TableName() string {
