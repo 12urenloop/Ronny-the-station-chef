@@ -120,11 +120,13 @@
       loop:
         - gonny-collector
         - gonny-spreader
-    - name: Deploy Prometheus node exporte
+    - name: Deploy Prometheus node exporter
       import_role:
         name: prometheus.prometheus.node_exporter # 0.0.0.0:9100
       tags: ['exporters']
     - name: Deploy Prometheus postgres exporter
       import_role:
         name: prometheus.prometheus.postgres_exporter # 0.0.0.0:9187
+      vars:
+        postgres_exporter_name: "postgresql://ronny:ronnydbpassword@127.0.0.1/ronny"
       tags: ['exporters']
