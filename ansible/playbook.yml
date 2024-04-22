@@ -120,7 +120,11 @@
       loop:
         - gonny-collector
         - gonny-spreader
-    - name: Deploy Prometheus node exporter
+    - name: Deploy Prometheus node exporte
       import_role:
-        name: prometheus.prometheus.node_exporter
+        name: prometheus.prometheus.node_exporter # 0.0.0.0:9100
+      tags: ['exporters']
+    - name: Deploy Prometheus postgres exporter
+      import_role:
+        name: prometheus.prometheus.postgres_exporter # 0.0.0.0:9187
       tags: ['exporters']
