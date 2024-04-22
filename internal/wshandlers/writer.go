@@ -12,6 +12,8 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+var batch_size = 10000
+
 func Writer(c *websocket.Conn, lastId int64) {
 	closeChan := make(chan bool)
 
@@ -54,31 +56,35 @@ func Writer(c *websocket.Conn, lastId int64) {
 					continue
 				}
 
-				err = c.SetWriteDeadline(time.Now().Add(10 * time.Second))
-				if err != nil {
-					logrus.Errorf("Failed set write deadline on WS: %+v\n", err)
-					continue
-				}
+				for i := 0; i < len(*detections); i += batch_size {
+					detection_batch := (*detections)[i:min(i+batch_size, len(*detections))]
 
-				if err = c.WriteJSON(detections); err != nil {
-					if errors.Is(err, os.ErrDeadlineExceeded) {
-						logrus.Errorf("Failed to write data to websocket: deadline exceeded")
+					err = c.SetWriteDeadline(time.Now().Add(10 * time.Second))
+					if err != nil {
+						logrus.Errorf("Failed set write deadline on WS: %+v\n", err)
 						continue
 					}
-					if errors.Is(err, io.ErrClosedPipe) || errors.Is(err, os.ErrDeadlineExceeded) || strings.Contains(err.Error(), "broken pipe") {
-						// Handle connection closure
-						logrus.Debugln("Connection closed")
-						closeChan <- true
-						return
-					}
-					// Do some error recovery/restart procedure
-					logrus.Errorf("Failed to send detections over websocket: %+v\n", err)
-					continue
-				}
-				lastId = lastDbId
 
-				// Do not spam the loop
-				time.Sleep(10 * time.Millisecond)
+					if err = c.WriteJSON(detection_batch); err != nil {
+						if errors.Is(err, os.ErrDeadlineExceeded) {
+							logrus.Errorf("Failed to write data to websocket: deadline exceeded")
+							continue
+						}
+						if errors.Is(err, io.ErrClosedPipe) || errors.Is(err, os.ErrDeadlineExceeded) || strings.Contains(err.Error(), "broken pipe") {
+							// Handle connection closure
+							logrus.Debugln("Connection closed")
+							closeChan <- true
+							return
+						}
+						// Do some error recovery/restart procedure
+						logrus.Errorf("Failed to send detections over websocket: %+v\n", err)
+						continue
+					}
+					lastId = lastDbId
+
+					// Do not spam the loop
+					time.Sleep(10 * time.Millisecond)
+				}
 			}
 		}
 	}
