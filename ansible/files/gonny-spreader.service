@@ -3,7 +3,7 @@ Description=Gonny Spreader, serves detections from the database
 Requires=network.target
 Requires=time-sync.target
 After=network.target
-After=time-sync.target
+After=ntpd.service
 
 [Service]
 Type=simple
