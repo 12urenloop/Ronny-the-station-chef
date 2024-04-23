@@ -6,6 +6,44 @@
     - name: Set timezone to Europe/Brussels
       community.general.timezone:
         name: Europe/Brussels
+      tags: ['base']
+
+    - name: Set a hostname
+      ansible.builtin.hostname:
+        name: "{{ inventory_hostname }}"
+      tags: ['base']
+    - name: Add a /etc/hosts entry for our hostname
+      ansible.builtin.lineinfile:
+        path: /etc/hosts
+        insertafter: '^127\.0\.0\.1[ ]+localhost'
+        line: "127.0.0.1   {{ inventory_hostname }}"
+        owner: root
+        group: root
+        mode: '0644'
+        create: true
+      tags: ['base']
+
+    - name: Change password for pi user
+      ansible.builtin.user:
+        name: pi
+        shell: /bin/bash
+        state: present
+        password: "{{ 'zeusisdemax' | password_hash('sha512') }}"
+      tags: ['base']
+
+    - name: Install base dependencies
+      apt:
+        name: [
+          'zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux',
+          'gcc', 'build-essential',
+          'python3-dev', 'python3-setuptools', 'python3-pip', 'python3-wheel',
+          'acl', 'postgresql', 'libpq-dev', 'python3-psycopg2',
+          'ntpd'
+        ]
+        update_cache: true
+        install_recommends: false
+      tags: ['base']
+
     - name: Set NTP server to the one from UGent
       ansible.builtin.lineinfile:
         path: /etc/systemd/timesyncd.conf
@@ -17,60 +55,6 @@
         name: systemd-time-wait-sync
         enabled: true
         state: started
-    - name: Install base dependencies
-      apt:
-        name: [
-          'zsh', 'git', 'htop', 'curl', 'vim', 'dnsutils', 'tmux',
-          'gcc', 'build-essential',
-          'python3-dev', 'python3-setuptools', 'python3-pip', 'python3-wheel',
-          'acl', 'postgresql', 'libpq-dev', 'python3-psycopg2'
-        ]
-        update_cache: true
-        install_recommends: false
-      tags: ['db']
-    - name: Set a hostname
-      ansible.builtin.hostname:
-        name: "{{ inventory_hostname }}"
-    - name: Add a /etc/hosts entry for our hostname
-      ansible.builtin.lineinfile:
-        path: /etc/hosts
-        insertafter: '^127\.0\.0\.1[ ]+localhost'
-        line: "127.0.0.1   {{ inventory_hostname }}"
-        owner: root
-        group: root
-        mode: '0644'
-        create: true
-    - name: Change password for pi user
-      ansible.builtin.user:
-        name: pi
-        shell: /bin/bash
-        state: present
-        password: "{{ 'zeusisdemax' | password_hash('sha512') }}"
-    - name: Install golang
-      import_role:
-        name: gantsign.golang
-      tags: ['build']
-
-    - name: Checkout the ronny repository
-      ansible.builtin.git:
-        repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
-        dest: '/gonny'
-        version: 'main'
-
-    # - name: Install go dependencies
-    #   ansible.builtin.command:
-    #     cmd: go mod download
-    #     chdir: /gonny/
-    - name: Built collector binary
-      ansible.builtin.command:
-        cmd: env GOROOT={{ golang_install_dir }} GOPATH=/root {{ golang_install_dir }}/bin/go build -o cmds/collector/main cmds/collector/main.go
-        chdir: /gonny/
-      tags: ['build']
-    - name: Built spreader binary
-      ansible.builtin.command:
-        cmd: env GOROOT={{ golang_install_dir }} GOPATH=/root {{ golang_install_dir }}/bin/go build -o cmds/spreader/main cmds/spreader/main.go
-        chdir: /gonny/
-      tags: ['build']
 
     - name: Ensure postgresql is in a running state
       service:
@@ -101,7 +85,32 @@
         name: ronny
         owner: ronny
       tags: ['db']
-    - name: Copy systemd files
+
+    - name: Install golang
+      import_role:
+        name: gantsign.golang
+      tags: ['gonny']
+    - name: Checkout the ronny repository
+      ansible.builtin.git:
+        repo: 'https://github.com/12urenloop/Ronny-the-station-chef.git'
+        dest: '/gonny'
+        version: 'main'
+    # - name: Install go dependencies
+    #   ansible.builtin.command:
+    #     cmd: go mod download
+    #     chdir: /gonny/
+    #   tags: ['gonny']
+    - name: Build collector binary
+      ansible.builtin.command:
+        cmd: env GOROOT={{ golang_install_dir }} GOPATH=/root {{ golang_install_dir }}/bin/go build -o cmds/collector/main cmds/collector/main.go
+        chdir: /gonny/
+      tags: ['gonny']
+    - name: Build spreader binary
+      ansible.builtin.command:
+        cmd: env GOROOT={{ golang_install_dir }} GOPATH=/root {{ golang_install_dir }}/bin/go build -o cmds/spreader/main cmds/spreader/main.go
+        chdir: /gonny/
+      tags: ['gonny']
+    - name: Copy gonny systemd files
       ansible.builtin.copy:
         src: "{{ item }}"
         dest: "/etc/systemd/system/{{ item }}"
@@ -111,6 +120,7 @@
       loop:
         - gonny-collector.service
         - gonny-spreader.service
+      tags: ['gonny']
     - name: Enable systemd services
       ansible.builtin.systemd:
         daemon_reload: true
@@ -120,6 +130,8 @@
       loop:
         - gonny-collector
         - gonny-spreader
+      tags: ['gonny']
+
     - name: Deploy Prometheus node exporter
       import_role:
         name: prometheus.prometheus.node_exporter # 0.0.0.0:9100
