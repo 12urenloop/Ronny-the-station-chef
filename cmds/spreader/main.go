@@ -14,6 +14,7 @@ import (
 	"github.com/12urenloop/Ronny-the-station-chef/internal/wshandlers"
 	"github.com/gofiber/contrib/websocket"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/pprof"
 	"github.com/sirupsen/logrus"
 )
 
@@ -82,6 +83,9 @@ func main() {
 			stationId,
 		})
 	})
+
+	// Initialize default config
+	app.Use(pprof.New())
 
 	app.Use("/", func(c *fiber.Ctx) error {
 		if websocket.IsWebSocketUpgrade(c) {

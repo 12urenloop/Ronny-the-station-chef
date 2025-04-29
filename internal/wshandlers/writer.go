@@ -83,7 +83,7 @@ func Writer(c *websocket.Conn, lastId int64) {
 					lastId = lastDbId
 
 					// Do not spam the loop
-					time.Sleep(10 * time.Millisecond)
+					time.Sleep(100 * time.Millisecond)
 				}
 			}
 		}
