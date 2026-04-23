@@ -1,7 +1,0 @@
----
-collections:
-  - name: community.postgresql
-  - name: prometheus.prometheus
-roles:
-  - name: gantsign.golang
-

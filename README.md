@@ -20,14 +20,6 @@ a rewrite of ronny the station chef but in go
 - Run what you want with `go run cmds/PROGRAM/main.go`
 and in the case of the `Collector` do not forget to run the program with higher privileges
 
-
 ## Production
 
-There is an all in one Ansible script that sets a linux machine up to run ronny. You need to have **Ansible** and **ansible-galaxy** installed.
-
-Steps:
-1. `cd ansible`
-2. make init
-3. enter the stations in the [hosts.ini](ansible/hosts.ini) file
-4. `ansible-playbook playbook.yml`
-
+See the (ansible-config)[https://github.com/12urenloop/ansible-config/] repo.
