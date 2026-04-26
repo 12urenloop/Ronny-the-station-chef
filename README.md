@@ -22,4 +22,4 @@ and in the case of the `Collector` do not forget to run the program with higher 
 
 ## Production
 
-See the (ansible-config)[https://github.com/12urenloop/ansible-config/] repo.
+See the [ansible-config](https://github.com/12urenloop/ansible-config/) repo.
